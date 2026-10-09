@@ -1,0 +1,22 @@
+{
+  "_comment": "The publisher takes the first entry with status 'ready' whose publish_at is today or earlier. Set status to 'draft' to hold one back. 'published' entries are skipped and keep their media_id.",
+  "posts": [
+    {
+      "slug": "002-ice-resurfacer",
+      "title": "The ice resurfacer",
+      "status": "ready",
+      "publish_at": "2026-10-13",
+      "caption": "posts/002-ice-resurfacer/caption.txt",
+      "slides": [
+        "posts/002-ice-resurfacer/zamboni_01.jpg",
+        "posts/002-ice-resurfacer/zamboni_02.jpg",
+        "posts/002-ice-resurfacer/zamboni_03.jpg",
+        "posts/002-ice-resurfacer/zamboni_04.jpg",
+        "posts/002-ice-resurfacer/zamboni_05.jpg",
+        "posts/002-ice-resurfacer/zamboni_06.jpg",
+        "posts/002-ice-resurfacer/zamboni_07.jpg",
+        "posts/002-ice-resurfacer/zamboni_08.jpg"
+      ]
+    }
+  ]
+}

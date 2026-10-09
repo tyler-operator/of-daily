@@ -1,0 +1,27 @@
+name: refresh-token
+
+on:
+  schedule:
+    # Sundays 09:07 ET. Tokens last 60 days, so this gets eight attempts
+    # before one would actually expire.
+    - cron: "7 13 * * 0"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh long-lived token
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: python scripts/refresh_token.py
