@@ -1,0 +1,35 @@
+name: metrics
+
+on:
+  schedule:
+    # Daily 09:23 ET. Carousels keep earning saves for weeks, so every
+    # published post gets re-measured, not just yesterday's.
+    - cron: "23 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Pull insights
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python scripts/metrics.py
+
+      - name: Commit metrics
+        run: |
+          git config user.name "of-daily bot"
+          git config user.email "actions@github.com"
+          git add metrics.json
+          git diff --staged --quiet || git commit -m "metrics: $(date -u +%F)"
+          git push
