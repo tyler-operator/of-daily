@@ -4,7 +4,7 @@
     {
       "slug": "002-ice-resurfacer",
       "title": "The ice resurfacer",
-      "status": "ready",
+      "status": "published",
       "publish_at": "2026-10-09",
       "caption": "posts/002-ice-resurfacer/caption.txt",
       "slides": [
@@ -16,7 +16,9 @@
         "posts/002-ice-resurfacer/zamboni_06.jpg",
         "posts/002-ice-resurfacer/zamboni_07.jpg",
         "posts/002-ice-resurfacer/zamboni_08.jpg"
-      ]
+      ],
+      "published_at": "2026-10-09T21:02:28Z",
+      "media_id": "18489354346129275"
     }
   ]
 }
