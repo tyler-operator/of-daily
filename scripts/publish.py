@@ -75,12 +75,12 @@ def wait_ready(container_id, label, timeout=300):
     """Poll a container until FINISHED. Meta fetches the image during this."""
     start = time.time()
     while time.time() - start < timeout:
-        info = get(container_id, {"fields": "status_code,status"})
+        info = get(container_id, {"fields": "status_code,status,error_message"})
         code = info.get("status_code")
         if code == "FINISHED":
             return
         if code == "ERROR":
-            fail(f"{label} container errored: {info.get('status')}")
+            fail(f"{label} container errored: {json.dumps(info)}")
         time.sleep(5)
     fail(f"{label} container timed out after {timeout}s")
 
