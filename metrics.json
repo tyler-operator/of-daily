@@ -3,6 +3,10 @@
     {
       "reach": 0,
       "date": "2026-10-09"
+    },
+    {
+      "reach": 2,
+      "date": "2026-10-10"
     }
   ],
   "posts": {
@@ -17,6 +21,18 @@
         "follows": 0,
         "total_interactions": 0,
         "date": "2026-10-09",
+        "saves_per_1k_reach": 0.0
+      },
+      {
+        "reach": 2,
+        "saved": 0,
+        "shares": 0,
+        "comments": 0,
+        "likes": 0,
+        "profile_visits": 2,
+        "follows": 0,
+        "total_interactions": 0,
+        "date": "2026-10-10",
         "saves_per_1k_reach": 0.0
       }
     ]
