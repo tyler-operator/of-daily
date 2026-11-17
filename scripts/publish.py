@@ -22,7 +22,10 @@ import time
 import urllib.parse
 import urllib.request
 
-API = "https://graph.instagram.com/v23.0"
+# Host depends on which token the Meta app issues.
+# Instagram Login path -> graph.instagram.com
+# Unified / Facebook Login for Business (system-user token) -> graph.facebook.com
+API = os.environ.get("IG_API_BASE", "https://graph.facebook.com/v23.0")
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 QUEUE = os.path.join(ROOT, "queue.json")
 
