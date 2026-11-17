@@ -19,6 +19,23 @@
       ],
       "published_at": "2026-10-09T21:02:28Z",
       "media_id": "18489354346129275"
+    },
+    {
+      "slug": "003-aerospace-tiers",
+      "title": "Who actually builds an aircraft",
+      "status": "ready",
+      "publish_at": "2026-11-17",
+      "caption": "posts/003-aerospace-tiers/caption.txt",
+      "slides": [
+        "posts/003-aerospace-tiers/aero_01.jpg",
+        "posts/003-aerospace-tiers/aero_02.jpg",
+        "posts/003-aerospace-tiers/aero_03.jpg",
+        "posts/003-aerospace-tiers/aero_04.jpg",
+        "posts/003-aerospace-tiers/aero_05.jpg",
+        "posts/003-aerospace-tiers/aero_06.jpg",
+        "posts/003-aerospace-tiers/aero_07.jpg",
+        "posts/003-aerospace-tiers/aero_08.jpg"
+      ]
     }
   ]
 }

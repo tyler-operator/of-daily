@@ -1,0 +1,25 @@
+Everyone is talking about defence spending. Almost nobody can tell you who actually builds the aircraft.
+
+Four layers, and the money behaves differently at every one.
+
+Boeing and Airbus own the type certificate and the order book, which means they own the programme for its life. Final assembly is roughly 10 to 20 percent of the airframe's value. They design and integrate. They build very little. They pay their Tier 1 suppliers in 90 to 120 days, and that clock gets passed down the chain unchanged.
+
+Tier 1 hands over whole systems. A complete engine. The entire avionics suite. Pratt & Whitney Canada builds engines in Longueuil. These firms fund the development themselves and recover it across decades of deliveries.
+
+Tier 2 runs $20M to $500M and builds sub-assemblies. Tier 3 runs $2M to $50M, cuts one part through one process, and gets no say in the design. Long-term agreements run three to ten years with price-down clauses of two to three percent a year written in. A drawing, a forging and a due date.
+
+Then follow one part back up.
+
+A turbine disc is the wheel the blades bolt to, holding them at 10,000 rpm. A blade can come off and the engine will contain it. A disc cannot. That one fact sets the alloy, the inspection and the paperwork.
+
+A 210 pound forging becomes an 11 pound disc. The other 199 pounds leave as chips.
+
+The shop that cuts it bills $230 an hour against $193 an hour to run the machine. Carbide tooling is $50 of that, nearly as much as the machine's own depreciation, because nickel superalloy hardens as you cut it.
+
+Four companies touch that disc before it flies. One of them cut metal.
+
+Next week: who keeps the money. It is not the layer you would guess.
+
+Sources: Airbus Supplier Nadcap Accreditation Policy 2024, published 2026 US five-axis machining rate surveys, US Air Force buy-to-fly reference, Aubert & Duval Ti5553 datasheet. Machine hour costs are modeled from those inputs. All figures CAD.
+
+#manufacturing #aerospace #industrial #canada #machining #operations #howitsmade #supplychain #smallbusiness #defence
