@@ -78,7 +78,14 @@ def wait_ready(container_id, label, timeout=300):
     """Poll a container until FINISHED. Meta fetches the image during this."""
     start = time.time()
     while time.time() - start < timeout:
-        info = get(container_id, {"fields": "status_code,status,error_message"})
+        try:
+            info = get(container_id,
+                       {"fields": "status_code,status,error_message"})
+        except RuntimeError as e:
+            # graph.facebook.com does not expose error_message on this node.
+            if "nonexisting field" not in str(e):
+                raise
+            info = get(container_id, {"fields": "status_code,status"})
         code = info.get("status_code")
         if code == "FINISHED":
             return
