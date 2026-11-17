@@ -14,11 +14,14 @@ Headless publishing for @operatorsfund. Slides are rendered locally and committe
 | Repo | `tyler-operator/of-daily`, public |
 | Account | @operatorsfund, Instagram professional |
 | IG user id | `17841422442383715` |
-| Meta app | OF Daily Publisher, app ID `1086663147312668` |
-| Auth path | Instagram API with Instagram Login (no Facebook Page needed) |
+| Meta app | OF Daily Publisher, app ID `897158953423545` |
+| Auth path | Unified Login, system-user token (never expires) |
+| Graph host | `graph.facebook.com`, override with `IG_API_BASE` |
 | Publish cron | `12 11 * * 1-5`, weekdays 11:12 UTC |
-| Token refresh cron | `7 13 * * 0`, Sundays |
-| Secrets | `IG_USER_ID`, `IG_ACCESS_TOKEN`, `GH_PAT` |
+| Secrets | `IG_USER_ID`, `IG_ACCESS_TOKEN` |
+
+Rebuilt 2026-11-17 after the original app (`1086663147312668`) vanished.
+There is no token refresh job any more; the old one is deleted.
 
 Public repo is load-bearing twice over: Actions minutes are unmetered, and Meta fetches the images from `raw.githubusercontent.com` at container-creation time. Make it private and posting stops.
 
@@ -62,10 +65,14 @@ Success looks like `published <slug> as media <id>` followed by a `published:` c
 - **`carousel container errored`** — Meta's parent container failed. Often transient; re-run before investigating. The script prints the whole status payload including `error_message`.
 - **`nothing ready to publish`** — no entry is both `ready` and due. Check `publish_at` against today.
 - **Child container errors** — Meta could not fetch an image. Confirm the repo is still public and the raw URL resolves.
-- **401 or OAuth errors** — the token died. Regenerate in the app dashboard and replace the secret.
-- **Red refresh-token run** — the warning shot. Tokens last 60 days and the weekly job gets eight attempts, so one red run is not urgent but three is.
+- **`API access blocked`, subcode 5258005** — the app itself is gone or restricted. Not transient. Check developers.facebook.com/apps; if it is not listed, rebuild. This happened on 2026-10-11 and went unnoticed for five weeks.
+- **`Cannot parse access token`, code 190** — right token, wrong host. A Unified Login system-user token only works against `graph.facebook.com`. An Instagram Login token only works against `graph.instagram.com`. Set `IG_API_BASE` to match the token.
+- **`Tried accessing nonexisting field (error_message)`** — `graph.facebook.com` does not expose that field on a container node. `wait_ready` already falls back; if it resurfaces, trim the field list further.
+- **401 or other OAuth errors** — regenerate the token in the app dashboard and replace the secret.
 
-Turn on Settings, Notifications, **Actions: send notifications for failed workflows only**. That red run is the only thing standing between a working pipeline and silent death.
+Turn on Settings, Notifications, **Actions: send notifications for failed workflows only**.
+
+The failure mode to design against is not a dead token, it is a familiar alarm. The old refresh job went red every Sunday for six weeks and nobody looked, because it had always looked like that. Meanwhile the publish job stayed green by doing nothing, because the queue was empty. Green that means idle and red that means nothing add up to a pipeline that is dead and silent. Every alarm in here should mean something, and an empty queue should be visible.
 
 ## Limits
 
@@ -80,11 +87,14 @@ The order matters; several steps have non-obvious prerequisites.
 
 1. **Facebook account.** Required to create any Meta app, even on the Instagram Login path. An Instagram-only Business Suite login is not enough. The user creates this.
 2. **Meta for Developers registration.** Four screens, includes phone verification. The user does this.
-3. **Create app.** Use case **Manage messaging & content on Instagram**. No business portfolio needed. No requirements, no App Review, no Business Verification for an account you own.
-4. **Permissions.** Add all required, then add `instagram_business_content_publish` by hand from the Permissions and features table. It is not in the required set. Each should read "Ready for testing".
-5. **Connect the account.** Section 2, Add account, role **Instagram Tester**, type the handle. Then accept the invite at instagram.com/accounts/manage_access/ under **Tester Invites**. The user accepts; it agrees to Meta's terms.
-6. **Generate token.** Section 2 next to the account. The user copies it.
-7. **Repo secrets.** `IG_USER_ID` (shown under the handle in section 2), `IG_ACCESS_TOKEN`, and `GH_PAT` (fine-grained, this repo only, Secrets: read and write, used solely to rotate the token).
+3. **Create app.** Use case **Manage messaging & content on Instagram**. No business portfolio needed. No App Review, no Business Verification for an account you own; the dashboard says as much on the App Review step.
+4. **Permissions.** Instagram, then Customize. New apps arrive with these pre-attached, so there may be nothing to action. Confirm `instagram_business_content_publish` reads "Ready for testing".
+5. **Login path. Choose Unified, not Facebook Login.** Facebook Login needs a Page linked to the account. Meta retired the standalone Instagram Login setup during 2026.
+6. **Tester role.** Roles tab, Instagram Testers, add the handle. Then accept at instagram.com/accounts/manage_access/ under **Tester Invites**. The user accepts; it agrees to Meta's terms.
+7. **Configuration.** API setup step 1, Create new configuration: General, **system-user access token**, the Instagram account as business asset, `instagram_content_publish` in permissions. Ignore Redirect URL and Login URL, they are for third-party login flows. Step 2 stays locked until a configuration exists.
+8. **Generate token.** Step 2, Add account. The user copies it.
+9. **Repo secret.** Replace `IG_ACCESS_TOKEN`. `IG_USER_ID` survives a rebuild unchanged. No `GH_PAT` needed.
+10. **Check the host.** A system-user token needs `graph.facebook.com`. The publisher defaults there.
 
 ## What Claude cannot do here, and must not try
 

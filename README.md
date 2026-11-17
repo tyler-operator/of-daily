@@ -20,30 +20,47 @@ tools). A personal account cannot publish via API.
 
 ### 2. Meta app
 
-1. developers.facebook.com, **Create App**, type **Business**.
-2. Add the **Instagram** product.
-3. Choose **Instagram API with Instagram Login**. This path needs no Facebook
-   Page, which removes a whole class of problems.
-4. Under API setup with Instagram login, add your Instagram account.
-5. Permissions needed: `instagram_business_basic`,
-   `instagram_business_content_publish`.
+1. developers.facebook.com, **Create App**, use case
+   **Manage messaging & content on Instagram**.
+2. Left menu, **Instagram**, then **Customize**. Permissions arrive
+   pre-attached on new apps; confirm `instagram_business_content_publish`
+   reads "Ready for testing".
+3. Login path: **Unified Login**. Not Facebook Login, which would need a
+   Facebook Page linked to the account.
 
-No App Review and no Business Verification. Standard Access covers apps that
-only serve accounts you own.
+   Meta retired the standalone "Instagram API with Instagram Login" setup
+   during 2026. Unified is what exists now, and it changes which Graph host
+   the token works against. See step 3.
+4. **Roles** tab, **Instagram Testers**, add the account. Then accept the
+   invite at instagram.com/accounts/manage_access/ under **Tester Invites**.
 
-### 3. Get a long-lived token
+No App Review and no Business Verification. The dashboard says so itself:
+skippable if you only build for your own Instagram business.
 
-In the app dashboard, generate a token for your account. Then exchange it:
+### 3. Get a token
 
-```bash
-# short-lived -> long-lived (60 days)
-curl -s "https://graph.instagram.com/access_token\
-?grant_type=ig_exchange_token\
-&client_secret=APP_SECRET\
-&access_token=SHORT_LIVED_TOKEN"
-```
+In **API setup**, step 1, click **Create new configuration**:
 
-Note your Instagram user id from the same dashboard.
+- Login variation: General
+- Access token: **System-user access token (SUAT)**
+- Business assets: the Instagram account
+- Permissions: include `instagram_content_publish`
+
+Ignore the Redirect URL and Login URL fields. Those exist to send other
+people through a login flow, which you are not doing. Step 2 stays greyed
+out until a configuration exists.
+
+Then step 2, **Add account**, and generate the token.
+
+**This token never expires.** That is the main reason to prefer this path:
+there is no renewal job to fail quietly.
+
+**It is a Facebook token, not an Instagram one.** It works against
+`graph.facebook.com` and `graph.instagram.com` cannot parse it at all. The
+publisher defaults to the Facebook host; override with `IG_API_BASE` if you
+ever move back to an Instagram-Login token.
+
+Note your Instagram user id from the same screen.
 
 ### 4. Repo secrets
 
@@ -52,8 +69,10 @@ Settings, Secrets and variables, Actions:
 | Secret | What |
 |---|---|
 | `IG_USER_ID` | Instagram professional account id |
-| `IG_ACCESS_TOKEN` | the long-lived token from step 3 |
-| `GH_PAT` | fine-grained PAT, this repo, **Secrets: read and write**. Only used to rotate the token above. |
+| `IG_ACCESS_TOKEN` | the system-user token from step 3 |
+
+`GH_PAT` is no longer needed. It existed only to rotate the old 60-day
+token.
 
 ### 5. Test before trusting it
 
@@ -71,7 +90,8 @@ Then run it again without dry run.
    - **1080 x 1350**, every slide identical. Instagram crops the whole
      carousel to the first slide's ratio.
    - JPEG only. No PNG, no WebP. Under 8MB.
-2. Write `posts/<nnn>-<slug>/caption.txt`. Max 2,200 characters, 30 hashtags.
+2. Write `posts/<nnn>-<slug>/caption.txt`. Max 2,200 characters. Meta allows
+   30 hashtags; Instagram now surfaces about five, so use ten at most.
 3. Add an entry to `queue.json` with `"status": "ready"` and a `publish_at`
    date.
 4. Commit. The next scheduled run picks it up.
@@ -85,9 +105,12 @@ Use `"status": "draft"` to park something. The publisher skips it.
 | Workflow | When | Does |
 |---|---|---|
 | `publish` | Weekdays 11:12 UTC | Posts the next ready entry |
-| `refresh-token` | Sundays 13:07 UTC | Extends the token another 60 days |
+| `metrics` | Daily | Records reach and saves |
 
 Both run on `workflow_dispatch` too.
+
+There is no token refresh job. System-user tokens do not expire, so the
+weekly renewal that used to live here was deleted in November 2026.
 
 Times are UTC, so they shift an hour against Toronto when DST changes. The
 minutes are deliberately off the hour: cron jobs scheduled at :00 queue behind
@@ -97,14 +120,25 @@ everyone else's.
 
 ## The thing that will actually break
 
-**The token.** Long-lived tokens last 60 days. The weekly refresh extends them,
-so in steady state it runs forever. But if the refresh fails eight weeks
-running and nobody looks, the token dies and recovery needs a manual browser
-login.
+**The Meta app.** It can disappear. This one did, around 11 October 2026, and
+nothing surfaced it for five weeks: the publish job kept going green because
+the queue was empty, and the only signal was a weekly red run on a renewal
+job that everybody had learned to ignore.
 
-Watch for it: Settings, Notifications, tick **Actions: send notifications for
-failed workflows only**. A red refresh-token run is the warning, and you get
-eight of them.
+Symptom: `API access blocked`, OAuthException, subcode 5258005, on every
+call. Not transient. Re-running will not help. Check
+developers.facebook.com/apps and see whether the app is still listed.
+
+The lesson is about alarms, not tokens. A red run that fires every week
+trains you to stop reading them, and then a real failure arrives wearing the
+same colour. Every alarm in here should mean something.
+
+Turn this on: Settings, Notifications, **Actions: send notifications for
+failed workflows only**. With the renewal job gone, a red run now means a
+real failure.
+
+**Recovery** is a rebuild: new app, new configuration, new token, replace
+`IG_ACCESS_TOKEN`. About 20 minutes. `IG_USER_ID` does not change.
 
 ## Limits worth knowing
 
