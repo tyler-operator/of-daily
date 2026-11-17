@@ -23,7 +23,7 @@
     {
       "slug": "003-aerospace-tiers",
       "title": "Who actually builds an aircraft",
-      "status": "ready",
+      "status": "published",
       "publish_at": "2026-11-17",
       "caption": "posts/003-aerospace-tiers/caption.txt",
       "slides": [
@@ -35,7 +35,9 @@
         "posts/003-aerospace-tiers/aero_06.jpg",
         "posts/003-aerospace-tiers/aero_07.jpg",
         "posts/003-aerospace-tiers/aero_08.jpg"
-      ]
+      ],
+      "published_at": "2026-11-17T18:01:48Z",
+      "media_id": "17930979759440361"
     }
   ]
 }
